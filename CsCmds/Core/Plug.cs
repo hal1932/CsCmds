@@ -34,23 +34,27 @@ namespace CsCmds.Core
         }
 
         #region get/set value
+        public MDataHandle GetDataHandle()
+        {
+            return MPlug.asMDataHandle();
+        }
+
         public T GetValue<T>()
         {
             var type = typeof(T);
             T value = default(T);
 
-            if (type == typeof(bool)) SetTypedValue(out value, MPlug.asBool());
-            else if (type == typeof(char)) SetTypedValue(out value, MPlug.asChar());
-            else if (type == typeof(double)) SetTypedValue(out value, MPlug.asDouble());
-            else if (type == typeof(float)) SetTypedValue(out value, MPlug.asFloat());
-            else if (type == typeof(int)) SetTypedValue(out value, MPlug.asInt());
-            else if (type == typeof(short)) SetTypedValue(out value, MPlug.asShort());
-            else if (type == typeof(string)) SetTypedValue(out value, MPlug.asString());
-            else if (type == typeof(MAngle)) SetTypedValue(out value, MPlug.asMAngle());
-            else if (type == typeof(MDataHandle)) SetTypedValue(out value, MPlug.asMDataHandle());
-            else if (type == typeof(MDistance)) SetTypedValue(out value, MPlug.asMDistance());
-            else if (type == typeof(MObject)) SetTypedValue(out value, MPlug.asMObject());
-            else if (type == typeof(MTime)) SetTypedValue(out value, MPlug.asMTime());
+            if (type == typeof(bool)) CopyTypedValue(out value, MPlug.asBool());
+            else if (type == typeof(char)) CopyTypedValue(out value, MPlug.asChar());
+            else if (type == typeof(double)) CopyTypedValue(out value, MPlug.asDouble());
+            else if (type == typeof(float)) CopyTypedValue(out value, MPlug.asFloat());
+            else if (type == typeof(int)) CopyTypedValue(out value, MPlug.asInt());
+            else if (type == typeof(short)) CopyTypedValue(out value, MPlug.asShort());
+            else if (type == typeof(string)) CopyTypedValue(out value, MPlug.asString());
+            else if (type == typeof(MAngle)) CopyTypedValue(out value, MPlug.asMAngle());
+            else if (type == typeof(MDistance)) CopyTypedValue(out value, MPlug.asMDistance());
+            else if (type == typeof(MObject)) CopyTypedValue(out value, MPlug.asMObject());
+            else if (type == typeof(MTime)) CopyTypedValue(out value, MPlug.asMTime());
             else throw new NotSupportedException("not supported type: " + type.Name);
 
             return value;
@@ -74,7 +78,7 @@ namespace CsCmds.Core
             else throw new NotSupportedException("not supported type: " + type.Name);
         }
 
-        private void SetTypedValue<T, U>(out T outValue, U value)
+        private void CopyTypedValue<T, U>(out T outValue, U value)
         {
             outValue = ChangeType<T, U>(value);
         }
