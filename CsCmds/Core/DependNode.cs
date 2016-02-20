@@ -5,7 +5,7 @@ using System.Linq;
 
 namespace CsCmds.Core
 {
-    public class DepNode
+    public class DependNode
     {
         public MObject MObject { get; private set; }
 
@@ -15,14 +15,14 @@ namespace CsCmds.Core
             get { return _fn ?? (_fn = new MFnDependencyNode(MObject)); }
         }
 
-        protected DepNode(MObject obj, MFnDependencyNode fn)
+        protected DependNode(MObject obj, MFnDependencyNode fn)
         {
             MObject = obj;
             _fn = fn;
         }
 
         #region enumerate
-        public static IEnumerable<DepNode> Enumerate(string filter = null, params MFn.Type[] types)
+        public static IEnumerable<DependNode> Enumerate(string filter = null, params MFn.Type[] types)
         {
             var typeFilter = CreateTypeFilter(types);
             var iter = new MItDependencyNodes(typeFilter);
@@ -31,13 +31,13 @@ namespace CsCmds.Core
                 var fn = new MFnDependencyNode(iter.item);
                 if (string.IsNullOrEmpty(filter) || fn.name.Contains(filter))
                 {
-                    yield return new DepNode(iter.item, fn);
+                    yield return new DependNode(iter.item, fn);
                 }
                 iter.next();
             }
         }
 
-        public static IEnumerable<DepNode> EnumerateSelected()
+        public static IEnumerable<DependNode> EnumerateSelected()
         {
             var list = new MSelectionList();
             MGlobal.getActiveSelectionList(list, true);
@@ -45,7 +45,7 @@ namespace CsCmds.Core
             {
                 var obj = new MObject();
                 item.getDependNode(obj);
-                yield return new DepNode(obj, null);
+                yield return new DependNode(obj, null);
             }
         }
         #endregion
@@ -92,6 +92,14 @@ namespace CsCmds.Core
             var attrObj = attrFn.create(longName, shortName, type);
             modifier.addAttribute(MObject, attrObj);
             return attrObj;
+        }
+        #endregion
+
+        #region conversion
+        public Transform AsTransform()
+        {
+            return (Fn.type() == MFn.Type.kTransform) ?
+                new Transform(MObject, Fn) : null;
         }
         #endregion
 
