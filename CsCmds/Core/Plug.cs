@@ -8,7 +8,7 @@ namespace CsCmds.Core
     public class Plug
     {
         public MPlug MPlug { get; private set; }
-        public DepNode ParentNode { get; private set; }
+        public DependNode ParentNode { get; private set; }
 
         public string Name { get { return MPlug.name; } }
 
@@ -27,36 +27,36 @@ namespace CsCmds.Core
             set { MPlug.isLocked = value; }
         }
 
-        internal Plug(MPlug plug, DepNode parent)
+        internal Plug(MPlug plug, DependNode parent)
         {
             MPlug = plug;
             ParentNode = parent;
         }
 
-        #region getAttr, setAttr
-        public T GetAttribute<T>()
+        #region get/set value
+        public T GetValue<T>()
         {
             var type = typeof(T);
             T value = default(T);
 
-            if (type == typeof(bool)) SetValue(out value, MPlug.asBool());
-            else if (type == typeof(char)) SetValue(out value, MPlug.asChar());
-            else if (type == typeof(double)) SetValue(out value, MPlug.asDouble());
-            else if (type == typeof(float)) SetValue(out value, MPlug.asFloat());
-            else if (type == typeof(int)) SetValue(out value, MPlug.asInt());
-            else if (type == typeof(short)) SetValue(out value, MPlug.asShort());
-            else if (type == typeof(string)) SetValue(out value, MPlug.asString());
-            else if (type == typeof(MAngle)) SetValue(out value, MPlug.asMAngle());
-            else if (type == typeof(MDataHandle)) SetValue(out value, MPlug.asMDataHandle());
-            else if (type == typeof(MDistance)) SetValue(out value, MPlug.asMDistance());
-            else if (type == typeof(MObject)) SetValue(out value, MPlug.asMObject());
-            else if (type == typeof(MTime)) SetValue(out value, MPlug.asMTime());
+            if (type == typeof(bool)) SetTypedValue(out value, MPlug.asBool());
+            else if (type == typeof(char)) SetTypedValue(out value, MPlug.asChar());
+            else if (type == typeof(double)) SetTypedValue(out value, MPlug.asDouble());
+            else if (type == typeof(float)) SetTypedValue(out value, MPlug.asFloat());
+            else if (type == typeof(int)) SetTypedValue(out value, MPlug.asInt());
+            else if (type == typeof(short)) SetTypedValue(out value, MPlug.asShort());
+            else if (type == typeof(string)) SetTypedValue(out value, MPlug.asString());
+            else if (type == typeof(MAngle)) SetTypedValue(out value, MPlug.asMAngle());
+            else if (type == typeof(MDataHandle)) SetTypedValue(out value, MPlug.asMDataHandle());
+            else if (type == typeof(MDistance)) SetTypedValue(out value, MPlug.asMDistance());
+            else if (type == typeof(MObject)) SetTypedValue(out value, MPlug.asMObject());
+            else if (type == typeof(MTime)) SetTypedValue(out value, MPlug.asMTime());
             else throw new NotSupportedException("not supported type: " + type.Name);
 
             return value;
         }
 
-        public void SetAttribute<T>(T value, MDGModifier modifier)
+        public void SetValue<T>(T value, MDGModifier modifier)
         {
             var type = typeof(T);
 
@@ -74,9 +74,8 @@ namespace CsCmds.Core
             else throw new NotSupportedException("not supported type: " + type.Name);
         }
 
-        private void SetValue<T, U>(out T outValue, U value)
+        private void SetTypedValue<T, U>(out T outValue, U value)
         {
-            //outValue = (T)Convert.ChangeType(value, typeof(T));
             outValue = ChangeType<T, U>(value);
         }
 
