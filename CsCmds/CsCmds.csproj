@@ -49,12 +49,15 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Dag\DagNode.cs" />
     <Compile Include="Core\File.cs" />
     <Compile Include="Core\Log.cs" />
-    <Compile Include="Core\DepNode.cs" />
+    <Compile Include="Core\DependNode.cs" />
     <Compile Include="Core\Mel.cs" />
     <Compile Include="Core\Plug.cs" />
     <Compile Include="Core\Python.cs" />
+    <Compile Include="Dag\Shape.cs" />
+    <Compile Include="Dag\Transform.cs" />
     <Compile Include="extensions\StringExtensions.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>

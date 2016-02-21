@@ -1,4 +1,5 @@
 ﻿using Autodesk.Maya.OpenMaya;
+using CsCmds.Dag;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -9,16 +10,16 @@ namespace CsCmds.Core
     {
         public MObject MObject { get; private set; }
 
-        private MFnDependencyNode _fn;
-        public MFnDependencyNode Fn
+        private MFnDependencyNode _fnDependNode;
+        public MFnDependencyNode FnDependNode
         {
-            get { return _fn ?? (_fn = new MFnDependencyNode(MObject)); }
+            get { return _fnDependNode ?? (_fnDependNode = new MFnDependencyNode(MObject)); }
         }
 
         protected DependNode(MObject obj, MFnDependencyNode fn)
         {
             MObject = obj;
-            _fn = fn;
+            _fnDependNode = fn;
         }
 
         #region enumerate
@@ -65,20 +66,20 @@ namespace CsCmds.Core
         {
             modifier.deleteNode(MObject);
             MObject = null;
-            _fn = null;
+            _fnDependNode = null;
         }
 
         #region plug, attr
         public Plug FindPlug(string name)
         {
-            var plug = Fn.findPlug(name);
+            var plug = FnDependNode.findPlug(name);
             return (plug != null) ? new Plug(plug, this) : null;
         }
 
         public IEnumerable<Plug> EnumeratePlugs(string filter = null)
         {
             var plugs = new MPlugArray();
-            Fn.getConnections(plugs);
+            FnDependNode.getConnections(plugs);
 
             return (!string.IsNullOrEmpty(filter)) ?
                 plugs.Where(plug => plug.name.Contains(filter))
@@ -95,11 +96,17 @@ namespace CsCmds.Core
         }
         #endregion
 
-        #region conversion
+        #region down cast
+        public DagNode AsDagNode()
+        {
+            return (MObject.hasFn(MFn.Type.kDagNode)) ?
+                new DagNode(MObject, null) : null;
+        }
+
         public Transform AsTransform()
         {
-            return (Fn.type() == MFn.Type.kTransform) ?
-                new Transform(MObject, Fn) : null;
+            return (MObject.hasFn(MFn.Type.kTransform)) ?
+                new Transform(MObject, null) : null;
         }
         #endregion
 
