@@ -16,9 +16,9 @@ namespace test
     {
         public override void doIt(MArgList args)
         {
-            foreach (var node in DepNode.Enumerate())
+            foreach (var node in DependNode.Enumerate())
             {
-                Log.Write(node.Fn.name);
+                Log.Write(node.FnDependNode.name);
             }
         }
     }

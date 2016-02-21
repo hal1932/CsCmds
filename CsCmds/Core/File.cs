@@ -48,9 +48,9 @@ namespace CsCmds.Core
         #endregion
 
         #region reference
-        public class Reference : DepNode
+        public class Reference : DependNode
         {
-            public string Name { get { return Fn.name; } }
+            public string Name { get { return FnDependNode.name; } }
 
             private Reference(MObject obj, MFnDependencyNode fn)
                 : base(obj, fn)
