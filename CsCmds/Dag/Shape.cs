@@ -43,7 +43,7 @@ namespace CsCmds.Dag
         {
             ShadingEngine result = null;
 
-            // シェイプ単位
+            // シェイプ単位で探す
             var iogPlug = FnDagNode.findPlug("instObjGroups");
             for (uint i = 0; i < iogPlug.numChildren; ++i)
             {
@@ -57,11 +57,11 @@ namespace CsCmds.Dag
                 if (sgObj != null)
                 {
                     result = new ShadingEngine(sgObj, null);
-                    yield return result;
-
                     break;
                 }
             }
+
+            yield return result;
 
             // シェイプ単位で見つからなかったら、フェース単位でも探す
             if (result == null)
