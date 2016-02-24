@@ -111,20 +111,6 @@ namespace CsCmds.Core
         }
         #endregion
 
-        #region down cast
-        public DagNode AsDagNode()
-        {
-            return (MObject.hasFn(MFn.Type.kDagNode)) ?
-                new DagNode(MObject, null) : null;
-        }
-
-        public Transform AsTransform()
-        {
-            return (MObject.hasFn(MFn.Type.kTransform)) ?
-                new Transform(MObject, null) : null;
-        }
-        #endregion
-
         private static MIteratorType CreateTypeFilter(MFn.Type[] types)
         {
             var iterType = new MIteratorType();

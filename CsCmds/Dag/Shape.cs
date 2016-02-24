@@ -1,4 +1,5 @@
 ﻿using Autodesk.Maya.OpenMaya;
+using CsCmds.Core;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -13,6 +14,12 @@ namespace CsCmds.Dag
             : base(obj, fn)
         {
             _transform = transform;
+        }
+
+        public static new Shape DownCastFrom(DependNode node)
+        {
+            return (node.MObject.hasFn(MFn.Type.kShape)) ?
+                new Shape(node.MObject, null) : null;
         }
 
         public Transform GetTransform()

@@ -23,5 +23,11 @@ namespace CsCmds.Dag
         {
             FnDagNode = fn;
         }
+
+        public static DagNode DownCastFrom(DependNode node)
+        {
+            return (node.MObject.hasFn(MFn.Type.kDagNode)) ?
+                new DagNode(node.MObject, null) : null;
+        }
     }
 }
