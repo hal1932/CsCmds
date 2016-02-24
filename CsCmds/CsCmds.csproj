@@ -49,6 +49,7 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Core\Reference.cs" />
     <Compile Include="Dag\DagNode.cs" />
     <Compile Include="Core\File.cs" />
     <Compile Include="Core\Log.cs" />
