@@ -78,6 +78,21 @@ namespace CsCmds.Core
 
         public IEnumerable<Plug> EnumeratePlugs(string filter = null)
         {
+            for (uint i = 0; i < FnDependNode.attributeCount; ++i)
+            {
+                var attrObj = FnDependNode.attribute(i);
+                var plug = new MPlug(MObject, attrObj);
+
+                if (!string.IsNullOrEmpty(filter) && !plug.name.Contains(filter))
+                {
+                    continue;
+                }
+                yield return new Plug(plug, this);
+            }
+        }
+
+        public IEnumerable<Plug> EnumerateConnectedPlugs(string filter = null)
+        {
             var plugs = new MPlugArray();
             FnDependNode.getConnections(plugs);
 
