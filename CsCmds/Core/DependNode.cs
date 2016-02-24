@@ -69,17 +69,6 @@ namespace CsCmds.Core
             return MObject.hasFn(type);
         }
 
-        public MSelectionList Select(bool replace = false)
-        {
-            var list = new MSelectionList();
-            if (!replace)
-            {
-                MGlobal.getActiveSelectionList(list, true);
-            }
-            list.add(MObject);
-            return list;
-        }
-
         public void Delete(MDGModifier modifier)
         {
             modifier.deleteNode(MObject);
