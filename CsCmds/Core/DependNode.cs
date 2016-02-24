@@ -19,6 +19,15 @@ namespace CsCmds.Core
             }
         }
 
+        public MFn.Type ApiType => MObject.apiType;
+        public bool IsNull => MObject.isNull;
+        public string Name => FnDependNode.name;
+        public bool IsLocked => FnDependNode.isLocked;
+        public bool IsShared => FnDependNode.isShared;
+        public bool IsFromReferenceFile => FnDependNode.isFromReferencedFile;
+        public bool CanBeWritten => FnDependNode.canBeWritten;
+        public int AttributeCount => (int)FnDependNode.attributeCount;
+
         protected DependNode(MObject obj)
         {
             Debug.Assert(obj != null);
@@ -54,6 +63,11 @@ namespace CsCmds.Core
             }
         }
         #endregion
+
+        public bool HasFn(MFn.Type type)
+        {
+            return MObject.hasFn(type);
+        }
 
         public MSelectionList Select(bool replace = false)
         {

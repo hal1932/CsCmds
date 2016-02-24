@@ -15,7 +15,7 @@ namespace CsCmds.Dag
 
         public static new Shape DownCastFrom(DependNode node)
         {
-            return (node.MObject.hasFn(MFn.Type.kShape)) ?
+            return (node.HasFn(MFn.Type.kShape)) ?
                 new Shape(node.MObject, null) : null;
         }
 

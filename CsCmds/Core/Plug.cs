@@ -11,22 +11,15 @@ namespace CsCmds.Core
         public MPlug MPlug { get; private set; }
         public DependNode ParentNode { get; private set; }
 
-        public string Name { get { return MPlug.name; } }
-
-        public bool IsSource { get { return MPlug.isConnected; } }
-        public bool IsDestination { get { return MPlug.isDestination; } }
-
-        public bool IsKeyable
-        {
-            get { return MPlug.isKeyable; }
-            set { MPlug.isKeyable = value; }
-        }
-
-        public bool IsLocked
-        {
-            get { return MPlug.isLocked; }
-            set { MPlug.isLocked = value; }
-        }
+        public string Name => MPlug.name;
+        public bool IsSource => MPlug.isSource();
+        public bool IsDestination => MPlug.isDestination;
+        public bool IsArray => MPlug.isArray;
+        public bool IsCompound => MPlug.isCompound;
+        public bool IsKeyable => MPlug.isKeyable;
+        public bool IsLocked => MPlug.isLocked;
+        public bool IsNull => MPlug.isNull;
+        public int ChildCount => (int)MPlug.numChildren;
 
         internal Plug(MPlug plug, DependNode parent)
         {
@@ -122,6 +115,21 @@ namespace CsCmds.Core
             var connections = new MPlugArray();
             MPlug.connectedTo(connections, asDestination, asSource);
             return connections.Select(conn => new Plug(conn, ParentNode));
+        }
+        #endregion
+
+        #region children
+        public Plug GetChild(int index)
+        {
+            return new Plug(MPlug.child((uint)index), ParentNode);
+        }
+
+        public IEnumerable<Plug> EnumerateChildren()
+        {
+            for (var i = 0; i < ChildCount; ++i)
+            {
+                yield return GetChild(i);
+            }
         }
         #endregion
 
