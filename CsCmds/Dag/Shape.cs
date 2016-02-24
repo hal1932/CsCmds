@@ -39,6 +39,47 @@ namespace CsCmds.Dag
             return _transform;
         }
 
+        public IEnumerable<ShadingEngine> EnumerableShadingEngines()
+        {
+            ShadingEngine result = null;
+
+            // シェイプ単位
+            var iogPlug = FnDagNode.findPlug("instObjGroups");
+            for (uint i = 0; i < iogPlug.numChildren; ++i)
+            {
+                var elemPlug = iogPlug.elementByLogicalIndex(i);
+
+                var dstPlugs = new MPlugArray();
+                elemPlug.connectedTo(dstPlugs, false, true);
+
+                var sgObj = dstPlugs.Select(dstPlug => dstPlug.node)
+                    .FirstOrDefault(dstObj => dstObj.apiType == MFn.Type.kShadingEngine);
+                if (sgObj != null)
+                {
+                    result = new ShadingEngine(sgObj, null);
+                    yield return result;
+
+                    break;
+                }
+            }
+
+            // シェイプ単位で見つからなかったら、フェース単位でも探す
+            if (result == null)
+            {
+                var meshFn = new MFnMesh(MObject);
+
+                var shaderObjs = new MObjectArray();
+                var indices = new MIntArray();
+                meshFn.getConnectedShaders(
+                    meshFn.dagPath.instanceNumber, shaderObjs, indices);
+
+                foreach (var shaderObj in shaderObjs)
+                {
+                    yield return new ShadingEngine(shaderObj, null);
+                }
+            }
+        }
+
         private Transform _transform;
     }
 }
