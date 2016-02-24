@@ -17,7 +17,7 @@ namespace CsCmds.Dag
         public Shape GetShape()
         {
             return (DagPath.childCount > 0) ?
-                new Shape(DagPath.child(0), null)
+                new Shape(DagPath.child(0), null, this)
                 : null;
         }
 
@@ -26,7 +26,7 @@ namespace CsCmds.Dag
             for (uint i = 0; i < DagPath.childCount; ++i)
             {
                 var childObj = DagPath.child(i);
-                yield return new Shape(childObj, null);
+                yield return new Shape(childObj, null, this);
             }
         }
         #endregion
