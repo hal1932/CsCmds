@@ -14,20 +14,19 @@ namespace CsCmds.Dag
         public MDagPath DagPath
         {
             get { return _dagPath ?? (_dagPath = MDagPath.getAPathTo(MObject)); }
-        }   
-
-        public MFnDagNode FnDagNode { get; private set; }
-
-        internal DagNode(MObject obj, MFnDagNode fn)
-            : base(obj, fn ?? new MFnDagNode(obj))
-        {
-            FnDagNode = fn;
         }
+
+        private MFnDagNode _fnDagNode;
+        public MFnDagNode FnDagNode { get { return _fnDagNode ?? (_fnDagNode = new MFnDagNode(MObject)); } }
+
+        internal DagNode(MObject obj)
+            : base(obj)
+        { }
 
         public static DagNode DownCastFrom(DependNode node)
         {
             return (node.MObject.hasFn(MFn.Type.kDagNode)) ?
-                new DagNode(node.MObject, null) : null;
+                new DagNode(node.MObject) : null;
         }
     }
 }

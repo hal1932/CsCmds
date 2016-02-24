@@ -11,27 +11,28 @@ namespace CsCmds.Core
     {
         public string NameSpace { get { return FnDependNode.name; } }
 
-        private Reference(MObject obj, MFnDependencyNode fn)
-            : base(obj, fn)
+        private Reference(MObject obj)
+            : base(obj)
         { }
 
         public static IEnumerable<Reference> Enumerate(Func<string, bool> nameSpaceFilter = null)
         {
             var iter = new MItDependencyNodes(MFn.Type.kReference);
+            var tmpFn = new MFnDependencyNode();
             while (!iter.isDone)
             {
                 if (nameSpaceFilter != null)
                 {
-                    var fn = new MFnDependencyNode(iter.item);
-                    if (fn.name.IsFilterd(nameSpaceFilter))
+                    tmpFn.setObject(iter.item);
+                    if (tmpFn.name.IsFilterd(nameSpaceFilter))
                     {
                         continue;
                     }
-                    yield return new Reference(iter.item, fn);
+                    yield return new Reference(iter.item);
                 }
                 else
                 {
-                    yield return new Reference(iter.item, null);
+                    yield return new Reference(iter.item);
                 }
                 iter.next();
             }

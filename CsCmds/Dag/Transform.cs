@@ -10,21 +10,21 @@ namespace CsCmds.Dag
 {
     public class Transform : DagNode
     {
-        internal Transform(MObject obj, MFnDagNode fn)
-            : base(obj, fn)
+        internal Transform(MObject obj)
+            : base(obj)
         { }
 
         public static new Transform DownCastFrom(DependNode node)
         {
             return (node.MObject.hasFn(MFn.Type.kTransform)) ?
-                new Transform(node.MObject, null) : null;
+                new Transform(node.MObject) : null;
         }
 
         #region shape
         public Shape GetShape()
         {
             return (DagPath.childCount > 0) ?
-                new Shape(DagPath.child(0), null, this)
+                new Shape(DagPath.child(0), this)
                 : null;
         }
 
@@ -33,7 +33,7 @@ namespace CsCmds.Dag
             for (uint i = 0; i < DagPath.childCount; ++i)
             {
                 var childObj = DagPath.child(i);
-                yield return new Shape(childObj, null, this);
+                yield return new Shape(childObj, this);
             }
         }
         #endregion

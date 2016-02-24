@@ -9,8 +9,8 @@ namespace CsCmds.Core
 {
     public class ShadingEngine : DependNode
     {
-        internal ShadingEngine(MObject obj, MFnDependencyNode fn)
-            : base(obj, fn)
+        internal ShadingEngine(MObject obj)
+            : base(obj)
         { }
     }
 }

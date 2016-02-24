@@ -16,10 +16,9 @@ namespace CsCmds.Core
             get { return _fnDependNode ?? (_fnDependNode = new MFnDependencyNode(MObject)); }
         }
 
-        protected DependNode(MObject obj, MFnDependencyNode fn)
+        protected DependNode(MObject obj)
         {
             MObject = obj;
-            _fnDependNode = fn;
         }
 
         #region enumerate
@@ -27,12 +26,13 @@ namespace CsCmds.Core
         {
             var typeFilter = CreateTypeFilter(types);
             var iter = new MItDependencyNodes(typeFilter);
+            var tmpFn = new MFnDependencyNode();
             while (!iter.isDone)
             {
-                var fn = new MFnDependencyNode(iter.item);
-                if (!fn.name.IsFilterd(filter))
+                tmpFn.setObject(iter.item);
+                if (!tmpFn.name.IsFilterd(filter))
                 {
-                    yield return new DependNode(iter.item, fn);
+                    yield return new DependNode(iter.item);
                 }
                 iter.next();
             }
@@ -46,7 +46,7 @@ namespace CsCmds.Core
             {
                 var obj = new MObject();
                 item.getDependNode(obj);
-                yield return new DependNode(obj, null);
+                yield return new DependNode(obj);
             }
         }
         #endregion

@@ -10,8 +10,8 @@ namespace CsCmds.Dag
 {
     public class Shape : DagNode
     {
-        internal Shape(MObject obj, MFnDagNode fn, Transform transform)
-            : base(obj, fn)
+        internal Shape(MObject obj, Transform transform)
+            : base(obj)
         {
             _transform = transform;
         }
@@ -19,7 +19,7 @@ namespace CsCmds.Dag
         public static new Shape DownCastFrom(DependNode node)
         {
             return (node.MObject.hasFn(MFn.Type.kShape)) ?
-                new Shape(node.MObject, null, null) : null;
+                new Shape(node.MObject, null) : null;
         }
 
         public Transform GetTransform()
@@ -31,7 +31,7 @@ namespace CsCmds.Dag
                     var parentObj = FnDagNode.parent(i);
                     if (parentObj.apiType == MFn.Type.kTransform)
                     {
-                        _transform = new Transform(parentObj, null);
+                        _transform = new Transform(parentObj);
                         break;
                     }
                 }
@@ -56,7 +56,7 @@ namespace CsCmds.Dag
                     .FirstOrDefault(dstObj => dstObj.apiType == MFn.Type.kShadingEngine);
                 if (sgObj != null)
                 {
-                    result = new ShadingEngine(sgObj, null);
+                    result = new ShadingEngine(sgObj);
                     break;
                 }
             }
@@ -75,7 +75,7 @@ namespace CsCmds.Dag
 
                 foreach (var shaderObj in shaderObjs)
                 {
-                    yield return new ShadingEngine(shaderObj, null);
+                    yield return new ShadingEngine(shaderObj);
                 }
             }
         }
