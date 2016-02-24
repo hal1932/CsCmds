@@ -23,14 +23,14 @@ namespace CsCmds.Core
         }
 
         #region enumerate
-        public static IEnumerable<DependNode> Enumerate(string filter = null, params MFn.Type[] types)
+        public static IEnumerable<DependNode> Enumerate(Func<string, bool> filter = null, params MFn.Type[] types)
         {
             var typeFilter = CreateTypeFilter(types);
             var iter = new MItDependencyNodes(typeFilter);
             while (!iter.isDone)
             {
                 var fn = new MFnDependencyNode(iter.item);
-                if (string.IsNullOrEmpty(filter) || fn.name.Contains(filter))
+                if (!fn.name.IsFilterd(filter))
                 {
                     yield return new DependNode(iter.item, fn);
                 }
@@ -76,14 +76,14 @@ namespace CsCmds.Core
             return (plug != null) ? new Plug(plug, this) : null;
         }
 
-        public IEnumerable<Plug> EnumeratePlugs(string filter = null)
+        public IEnumerable<Plug> EnumeratePlugs(Func<string, bool> filter = null)
         {
             for (uint i = 0; i < FnDependNode.attributeCount; ++i)
             {
                 var attrObj = FnDependNode.attribute(i);
                 var plug = new MPlug(MObject, attrObj);
 
-                if (!string.IsNullOrEmpty(filter) && !plug.name.Contains(filter))
+                if (plug.name.IsFilterd(filter))
                 {
                     continue;
                 }
@@ -91,13 +91,13 @@ namespace CsCmds.Core
             }
         }
 
-        public IEnumerable<Plug> EnumerateConnectedPlugs(string filter = null)
+        public IEnumerable<Plug> EnumerateConnectedPlugs(Func<string, bool> filter = null)
         {
             var plugs = new MPlugArray();
             FnDependNode.getConnections(plugs);
 
-            return (!string.IsNullOrEmpty(filter)) ?
-                plugs.Where(plug => plug.name.Contains(filter))
+            return (filter != null) ?
+                plugs.Where(plug => !plug.name.IsFilterd(filter))
                     .Select(plug => new Plug(plug, this))
                 : plugs.Select(plug => new Plug(plug, this));
         }

@@ -1,4 +1,5 @@
-﻿using System.IO;
+﻿using System;
+using System.IO;
 
 namespace CsCmds
 {
@@ -11,6 +12,11 @@ namespace CsCmds
                 return value.Replace(Path.DirectorySeparatorChar, '/');
             }
             return value;
+        }
+
+        public static bool IsFilterd(this string value, Func<string, bool> filter)
+        {
+            return (filter != null) ? filter(value) : true;
         }
     }
 }
