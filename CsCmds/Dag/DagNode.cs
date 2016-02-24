@@ -1,10 +1,5 @@
 ﻿using Autodesk.Maya.OpenMaya;
 using CsCmds.Core;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace CsCmds.Dag
 {
@@ -17,7 +12,10 @@ namespace CsCmds.Dag
         }
 
         private MFnDagNode _fnDagNode;
-        public MFnDagNode FnDagNode { get { return _fnDagNode ?? (_fnDagNode = new MFnDagNode(MObject)); } }
+        public MFnDagNode FnDagNode
+        {
+            get { return _fnDagNode ?? (_fnDagNode = new MFnDagNode(MObject)); }
+        }
 
         internal DagNode(MObject obj)
             : base(obj)

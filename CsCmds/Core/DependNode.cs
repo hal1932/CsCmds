@@ -1,7 +1,7 @@
 ﻿using Autodesk.Maya.OpenMaya;
-using CsCmds.Dag;
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 
 namespace CsCmds.Core
@@ -13,11 +13,15 @@ namespace CsCmds.Core
         private MFnDependencyNode _fnDependNode;
         public MFnDependencyNode FnDependNode
         {
-            get { return _fnDependNode ?? (_fnDependNode = new MFnDependencyNode(MObject)); }
+            get
+            {
+                return _fnDependNode ?? (_fnDependNode = new MFnDependencyNode(MObject));
+            }
         }
 
         protected DependNode(MObject obj)
         {
+            Debug.Assert(obj != null);
             MObject = obj;
         }
 

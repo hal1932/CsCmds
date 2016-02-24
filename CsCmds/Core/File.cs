@@ -1,5 +1,4 @@
 ﻿using Autodesk.Maya.OpenMaya;
-using System.Collections.Generic;
 
 namespace CsCmds.Core
 {

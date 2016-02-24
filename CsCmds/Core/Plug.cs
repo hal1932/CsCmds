@@ -1,6 +1,7 @@
 ﻿using Autodesk.Maya.OpenMaya;
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 
 namespace CsCmds.Core
@@ -29,6 +30,7 @@ namespace CsCmds.Core
 
         internal Plug(MPlug plug, DependNode parent)
         {
+            Debug.Assert(plug != null);
             MPlug = plug;
             ParentNode = parent;
         }
