@@ -7,26 +7,26 @@ namespace CsCmds.Core
     public static class Log
     {
         [Conditional("DEBUG")]
-        public static void Debug(object arg)
+        public static void DebugLine(object arg)
         {
-            Debug(arg.ToString());
+            DebugLine(arg.ToString());
         }
         [Conditional("DEBUG")]
-        public static void Debug(string format, params object[] args)
+        public static void DebugLine(string format, params object[] args)
         {
-            Write(format, args);
+            WriteLine(format, args);
         }
 
-        public static void Write(object arg)
+        public static void WriteLine(object arg)
         {
-            Write(arg.ToString());
+            WriteLine(arg.ToString());
         }
-        public static void Write(string format, params object[] args)
+        public static void WriteLine(string format, params object[] args)
         {
             MGlobal.displayInfo(string.Format(format, args));
         }
 
-        public static void Warning(object arg)
+        public static void WarningLine(object arg)
         {
             Warning(arg.ToString());
         }
@@ -35,20 +35,20 @@ namespace CsCmds.Core
             MGlobal.displayWarning(string.Format(format, args));
         }
 
-        public static void Error(Exception e)
+        public static void ErrorLine(Exception e)
         {
             var tmp = e;
             while (tmp != null)
             {
-                Error(tmp.ToString());
+                ErrorLine(tmp.ToString());
                 tmp = tmp.InnerException;
             }
         }
-        public static void Error(object arg)
+        public static void ErrorLine(object arg)
         {
-            Error(arg.ToString());
+            ErrorLine(arg.ToString());
         }
-        public static void Error(string format, params object[] args)
+        public static void ErrorLine(string format, params object[] args)
         {
             MGlobal.displayError(string.Format(format, args));
         }
