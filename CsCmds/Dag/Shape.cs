@@ -1,5 +1,6 @@
 ﻿using Autodesk.Maya.OpenMaya;
 using CsCmds.Core;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 
@@ -19,6 +20,12 @@ namespace CsCmds.Dag
                 new Shape(node.MObject, null) : null;
         }
 
+        public static IEnumerable<Shape> Enumerate(Func<string, bool> filter = null, params MFn.Type[] types)
+        {
+            return EnumerateRaw(filter, MFn.Type.kShape)
+                .Select(obj => new Shape(obj, null));
+        }
+
         public Transform GetTransform()
         {
             if (_transform == null)
@@ -36,7 +43,7 @@ namespace CsCmds.Dag
             return _transform;
         }
 
-        public IEnumerable<ShadingEngine> EnumerableShadingEngines()
+        public IEnumerable<ShadingEngine> EnumerateShadingEngines()
         {
             ShadingEngine result = null;
 

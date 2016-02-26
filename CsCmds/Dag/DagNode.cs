@@ -1,6 +1,8 @@
 ﻿using Autodesk.Maya.OpenMaya;
 using CsCmds.Core;
+using System;
 using System.Collections.Generic;
+using System.Linq;
 
 namespace CsCmds.Dag
 {
@@ -26,6 +28,12 @@ namespace CsCmds.Dag
         {
             return (node.HasFn(MFn.Type.kDagNode)) ?
                 new DagNode(node.MObject) : null;
+        }
+
+        public static IEnumerable<DagNode> Enumerate(Func<string, bool> filter = null)
+        {
+            return EnumerateRaw(filter, MFn.Type.kDagNode)
+                .Select(obj => new DagNode(obj));
         }
 
         #region children

@@ -1,6 +1,8 @@
 ﻿using Autodesk.Maya.OpenMaya;
 using CsCmds.Core;
+using System;
 using System.Collections.Generic;
+using System.Linq;
 
 namespace CsCmds.Dag
 {
@@ -14,6 +16,12 @@ namespace CsCmds.Dag
         {
             return (node.HasFn(MFn.Type.kTransform)) ?
                 new Transform(node.MObject) : null;
+        }
+
+        public static IEnumerable<Transform> Enumerate(Func<string, bool> filter = null, params MFn.Type[] types)
+        {
+            return EnumerateRaw(filter, types)
+                .Select(obj => new Transform(obj));
         }
 
         #region shape

@@ -22,17 +22,8 @@ namespace CsCmds.Core
         #region enumerate
         public static IEnumerable<ObjectSet> Enumerate(Func<string, bool> filter = null)
         {
-            var iter = new MItDependencyNodes(MFn.Type.kSet);
-            var tmpFn = new MFnDependencyNode();
-            while (!iter.isDone)
-            {
-                tmpFn.setObject(iter.item);
-                if (!tmpFn.name.IsFilterd(filter))
-                {
-                    yield return new ObjectSet(iter.item);
-                }
-                iter.next();
-            }
+            return EnumerateRaw(filter, MFn.Type.kSet)
+                .Select(obj => new ObjectSet(obj));
         }
         #endregion
     }

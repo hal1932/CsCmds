@@ -37,6 +37,12 @@ namespace CsCmds.Core
         #region enumerate
         public static IEnumerable<DependNode> Enumerate(Func<string, bool> filter = null, params MFn.Type[] types)
         {
+            return EnumerateRaw(filter, types)
+                .Select(obj => new DependNode(obj));
+        }
+
+        public static IEnumerable<MObject> EnumerateRaw(Func<string, bool> filter = null, params MFn.Type[] types)
+        {
             var typeFilter = CreateTypeFilter(types);
             var iter = new MItDependencyNodes(typeFilter);
             var tmpFn = new MFnDependencyNode();
@@ -45,7 +51,7 @@ namespace CsCmds.Core
                 tmpFn.setObject(iter.item);
                 if (!tmpFn.name.IsFilterd(filter))
                 {
-                    yield return new DependNode(iter.item);
+                    yield return iter.item;
                 }
                 iter.next();
             }
