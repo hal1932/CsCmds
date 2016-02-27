@@ -8,6 +8,10 @@ namespace CsCmds.Dag
 {
     public class Shape : DagNode
     {
+        internal Shape(MObject obj)
+            : this(obj, null)
+        { }
+
         internal Shape(MObject obj, Transform transform)
             : base(obj)
         {
@@ -20,11 +24,18 @@ namespace CsCmds.Dag
                 new Shape(node.MObject, null) : null;
         }
 
-        public static IEnumerable<Shape> Enumerate(Func<string, bool> filter = null, params MFn.Type[] types)
+        #region enumerate
+        public static new Shape FirstOrDefault(Func<MFnDependencyNode, bool> filter = null)
+        {
+            return Enumerate(filter).FirstOrDefault();
+        }
+
+        public static new IEnumerable<Shape> Enumerate(Func<MFnDependencyNode, bool> filter = null, params MFn.Type[] types)
         {
             return EnumerateRaw(filter, MFn.Type.kShape)
                 .Select(obj => new Shape(obj, null));
         }
+        #endregion
 
         public Transform GetTransform()
         {
@@ -43,7 +54,12 @@ namespace CsCmds.Dag
             return _transform;
         }
 
-        public IEnumerable<ShadingEngine> EnumerateShadingEngines()
+        public ShadingEngine FirstShadingEngineOrDefault(Func<MObject, bool> filter = null)
+        {
+            return EnumerateShadingEngines(filter).FirstOrDefault();
+        }
+
+        public IEnumerable<ShadingEngine> EnumerateShadingEngines(Func<MObject, bool> filter = null)
         {
             ShadingEngine result = null;
 
@@ -57,7 +73,7 @@ namespace CsCmds.Dag
                 elemPlug.connectedTo(dstPlugs, false, true);
 
                 var sgObj = dstPlugs.Select(dstPlug => dstPlug.node)
-                    .FirstOrDefault(dstObj => dstObj.apiType == MFn.Type.kShadingEngine);
+                    .FirstOrDefault(dstObj => dstObj.apiType == MFn.Type.kShadingEngine && dstObj.IsFilterd(filter));
                 if (sgObj != null)
                 {
                     result = new ShadingEngine(sgObj);
@@ -65,21 +81,36 @@ namespace CsCmds.Dag
                 }
             }
 
-            yield return result;
-
-            // シェイプ単位で見つからなかったら、フェース単位でも探す
-            if (result == null)
+            if (result != null)
             {
-                var meshFn = new MFnMesh(MObject);
+                yield return result;
+            }
 
-                var shaderObjs = new MObjectArray();
-                var indices = new MIntArray();
-                meshFn.getConnectedShaders(
-                    meshFn.dagPath.instanceNumber, shaderObjs, indices);
-
-                foreach (var shaderObj in shaderObjs)
+            // シェイプがメッシュの場合、フェース単位でSGがアサインされている可能性がある
+            // メッシュ以外のシェイプの例↓
+            // https://knowledge.autodesk.com/ja/search-result/caas/CloudHelp/cloudhelp/2016/JPN/Maya-SDK/files/Shapes-Shapes-in-Maya-htm.html
+            if (MObject.hasFn(MFn.Type.kMesh))
+            {
+                if (result == null)
                 {
-                    yield return new ShadingEngine(shaderObj);
+                    var meshFn = new MFnMesh(MObject);
+
+                    var shaderObjs = new MObjectArray();
+                    var indices = new MIntArray();
+                    meshFn.getConnectedShaders(
+                        meshFn.dagPath.instanceNumber, shaderObjs, indices);
+
+                    Log.WriteLine("--------");
+                    foreach (var shaderObj in shaderObjs)
+                    {
+                        Log.WriteLine(shaderObj.apiTypeStr);
+                    }
+                    Log.WriteLine("--------");
+
+                    foreach (var shaderObj in shaderObjs.Where(obj => obj.IsFilterd(filter)))
+                    {
+                        yield return new ShadingEngine(shaderObj);
+                    }
                 }
             }
         }

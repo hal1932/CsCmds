@@ -13,16 +13,22 @@ namespace CsCmds.Core
             : base(obj)
         { }
 
-        public static IEnumerable<Reference> Enumerate(Func<string, bool> nameSpaceFilter = null)
+        #region enumerate
+        public static new Reference FirstOrDefault(Func<MFnDependencyNode, bool> filter = null)
+        {
+            return Enumerate(filter).FirstOrDefault();
+        }
+
+        public static IEnumerable<Reference> Enumerate(Func<MFnDependencyNode, bool> filter = null)
         {
             var iter = new MItDependencyNodes(MFn.Type.kReference);
             var tmpFn = new MFnDependencyNode();
             while (!iter.isDone)
             {
-                if (nameSpaceFilter != null)
+                if (filter != null)
                 {
                     tmpFn.setObject(iter.item);
-                    if (tmpFn.name.IsFilterd(nameSpaceFilter))
+                    if (tmpFn.IsFilterd(filter))
                     {
                         continue;
                     }
@@ -35,6 +41,7 @@ namespace CsCmds.Core
                 iter.next();
             }
         }
+        #endregion
 
         public string GetFileName()
         {

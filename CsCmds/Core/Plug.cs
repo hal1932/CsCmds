@@ -9,7 +9,7 @@ namespace CsCmds.Core
     public class Plug
     {
         public MPlug MPlug { get; private set; }
-        public DependNode ParentNode { get; private set; }
+        public DependNode OwnerNode { get; private set; }
 
         public string Name => MPlug.name;
         public bool IsSource => MPlug.isSource();
@@ -20,12 +20,13 @@ namespace CsCmds.Core
         public bool IsLocked => MPlug.isLocked;
         public bool IsNull => MPlug.isNull;
         public int ChildCount => (int)MPlug.numChildren;
+        public MObject Attribute => MPlug.attribute;
 
         internal Plug(MPlug plug, DependNode parent)
         {
             Debug.Assert(plug != null);
             MPlug = plug;
-            ParentNode = parent;
+            OwnerNode = parent ?? new DependNode(plug.node);
         }
 
         #region get/set value
@@ -95,33 +96,34 @@ namespace CsCmds.Core
             modifier.disconnect(MPlug, destination.MPlug);
         }
 
-        public IEnumerable<Plug> EnumerateDestinations()
+        public IEnumerable<Plug> EnumerateDestinations(Func<MPlug, bool> filter = null)
         {
-            return EnumerateConnectionsImpl(true, false);
+            return EnumerateConnectionsImpl(false, true, filter);
         }
 
-        public IEnumerable<Plug> EnumerateSources()
+        public IEnumerable<Plug> EnumerateSources(Func<MPlug, bool> filter = null)
         {
-            return EnumerateConnectionsImpl(false, true);
+            return EnumerateConnectionsImpl(true, false, filter);
         }
 
-        public IEnumerable<Plug> EnumerateConnections()
+        public IEnumerable<Plug> EnumerateConnections(Func<MPlug, bool> filter = null)
         {
-            return EnumerateConnectionsImpl(true, true);
+            return EnumerateConnectionsImpl(true, true, filter);
         }
 
-        private IEnumerable<Plug> EnumerateConnectionsImpl(bool asDestination, bool asSource)
+        private IEnumerable<Plug> EnumerateConnectionsImpl(bool asDestination, bool asSource, Func<MPlug, bool> filter)
         {
             var connections = new MPlugArray();
             MPlug.connectedTo(connections, asDestination, asSource);
-            return connections.Select(conn => new Plug(conn, ParentNode));
+            return connections.Where(plug => plug.IsFilterd(filter))
+                .Select(conn => new Plug(conn, null));
         }
         #endregion
 
         #region children
         public Plug GetChild(int index)
         {
-            return new Plug(MPlug.child((uint)index), ParentNode);
+            return new Plug(MPlug.child((uint)index), OwnerNode);
         }
 
         public IEnumerable<Plug> EnumerateChildren()

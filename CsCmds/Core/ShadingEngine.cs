@@ -24,11 +24,22 @@ namespace CsCmds.Core
         }
 
         #region enumerate
-        public static new IEnumerable<ShadingEngine> Enumerate(Func<string, bool> filter = null)
+        public static new ShadingEngine FirstOrDefault(Func<MFnDependencyNode, bool> filter = null)
+        {
+            return Enumerate(filter).FirstOrDefault();
+        }
+
+        public static new IEnumerable<ShadingEngine> Enumerate(Func<MFnDependencyNode, bool> filter = null)
         {
             return EnumerateRaw(filter, MFn.Type.kShadingEngine)
                 .Select(obj => new ShadingEngine(obj));
         }
         #endregion
+
+        public DependNode GetShader(MFn.Type type = MFn.Type.kLambert)
+        {
+            return EnumerateSourceNodes(node => node.hasFn(type))
+                .SingleOrDefault();
+        }
     }
 }

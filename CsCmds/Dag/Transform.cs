@@ -18,18 +18,31 @@ namespace CsCmds.Dag
                 new Transform(node.MObject) : null;
         }
 
-        public static IEnumerable<Transform> Enumerate(Func<string, bool> filter = null, params MFn.Type[] types)
+        #region enumerate
+        public static new Transform FirstOrDefault(Func<MFnDependencyNode, bool> filter = null)
+        {
+            return Enumerate(filter).FirstOrDefault();
+        }
+
+        public static new IEnumerable<Transform> Enumerate(Func<MFnDependencyNode, bool> filter = null, params MFn.Type[] types)
         {
             return EnumerateRaw(filter, types)
                 .Select(obj => new Transform(obj));
         }
+        #endregion
 
         #region shape
-        public Shape GetShape()
+        public Shape FirstShapeOrDefault()
         {
-            return (DagPath.childCount > 0) ?
-                new Shape(DagPath.child(0), this)
-                : null;
+            for (uint i = 0; i < DagPath.childCount; ++i)
+            {
+                var child = DagPath.child(i);
+                if (child.hasFn(MFn.Type.kShape))
+                {
+                    return new Shape(child, this);
+                }
+            }
+            return default(Shape);
         }
 
         public IEnumerable<Shape> EnumerateShapes()

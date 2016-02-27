@@ -20,7 +20,12 @@ namespace CsCmds.Core
         }
 
         #region enumerate
-        public static IEnumerable<ObjectSet> Enumerate(Func<string, bool> filter = null)
+        public static new ObjectSet FirstOrDefault(Func<MFnDependencyNode, bool> filter = null)
+        {
+            return Enumerate(filter).FirstOrDefault();
+        }
+
+        public static IEnumerable<ObjectSet> Enumerate(Func<MFnDependencyNode, bool> filter = null)
         {
             return EnumerateRaw(filter, MFn.Type.kSet)
                 .Select(obj => new ObjectSet(obj));

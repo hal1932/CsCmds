@@ -30,11 +30,18 @@ namespace CsCmds.Dag
                 new DagNode(node.MObject) : null;
         }
 
-        public static IEnumerable<DagNode> Enumerate(Func<string, bool> filter = null)
+        #region enumerate
+        public static new DagNode FirstOrDefault(Func<MFnDependencyNode, bool> filter = null)
+        {
+            return Enumerate(filter).FirstOrDefault();
+        }
+
+        public static IEnumerable<DagNode> Enumerate(Func<MFnDependencyNode, bool> filter = null)
         {
             return EnumerateRaw(filter, MFn.Type.kDagNode)
                 .Select(obj => new DagNode(obj));
         }
+        #endregion
 
         #region children
         public DagNode GetChild(int index)

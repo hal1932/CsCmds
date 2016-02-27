@@ -28,33 +28,50 @@ namespace CsCmds.Core
         public bool CanBeWritten => FnDependNode.canBeWritten;
         public int AttributeCount => (int)FnDependNode.attributeCount;
 
-        protected DependNode(MObject obj)
+        internal DependNode(MObject obj)
         {
             Debug.Assert(obj != null);
             MObject = obj;
         }
 
         #region enumerate
-        public static IEnumerable<DependNode> Enumerate(Func<string, bool> filter = null, params MFn.Type[] types)
+        public static DependNode FirstOrDefault(Func<MFnDependencyNode, bool> filter = null)
+        {
+            return Enumerate(filter).FirstOrDefault();
+        }
+
+        public static IEnumerable<DependNode> Enumerate(Func<MFnDependencyNode, bool> filter = null, params MFn.Type[] types)
         {
             return EnumerateRaw(filter, types)
                 .Select(obj => new DependNode(obj));
         }
 
-        public static IEnumerable<MObject> EnumerateRaw(Func<string, bool> filter = null, params MFn.Type[] types)
+        protected static IEnumerable<MObject> EnumerateRaw(Func<MFnDependencyNode, bool> filter = null, params MFn.Type[] types)
         {
             var typeFilter = CreateTypeFilter(types);
             var iter = new MItDependencyNodes(typeFilter);
             var tmpFn = new MFnDependencyNode();
             while (!iter.isDone)
             {
-                tmpFn.setObject(iter.item);
-                if (!tmpFn.name.IsFilterd(filter))
+                if (filter != null)
+                {
+                    tmpFn.setObject(iter.item);
+                    if (tmpFn.IsFilterd(filter))
+                    {
+                        yield return iter.item;
+                    }
+                }
+                else
                 {
                     yield return iter.item;
                 }
                 iter.next();
             }
+        }
+
+        public static DependNode FirstSelectedOrDefault()
+        {
+            return EnumerateSelected().FirstOrDefault();
         }
 
         public static IEnumerable<DependNode> EnumerateSelected()
@@ -82,38 +99,101 @@ namespace CsCmds.Core
             _fnDependNode = null;
         }
 
-        #region plug, attr
+        #region connections
         public Plug FindPlug(string name)
         {
             var plug = FnDependNode.findPlug(name);
             return (plug != null) ? new Plug(plug, this) : null;
         }
 
-        public IEnumerable<Plug> EnumeratePlugs(Func<string, bool> filter = null)
+        #region enumerate plugs
+        public Plug FirstPlugOrDefault(Func<MPlug, bool> filter = null)
+        {
+            return EnumeratePlugs(filter).FirstOrDefault();
+        }
+
+        public Plug FirstConnectedPlugOrDefault(Func<MPlug, bool> filter = null)
+        {
+            return EnumerateConnectedPlugs(filter).FirstOrDefault();
+        }
+
+        public IEnumerable<Plug> EnumeratePlugs(Func<MPlug, bool> filter = null)
         {
             for (uint i = 0; i < FnDependNode.attributeCount; ++i)
             {
                 var attrObj = FnDependNode.attribute(i);
                 var plug = new MPlug(MObject, attrObj);
 
-                if (plug.name.IsFilterd(filter))
+                if (plug.IsFilterd(filter))
                 {
-                    continue;
+                    yield return new Plug(plug, this);
                 }
-                yield return new Plug(plug, this);
             }
         }
 
-        public IEnumerable<Plug> EnumerateConnectedPlugs(Func<string, bool> filter = null)
+        public IEnumerable<Plug> EnumerateConnectedPlugs(Func<MPlug, bool> filter = null)
         {
             var plugs = new MPlugArray();
             FnDependNode.getConnections(plugs);
 
-            return (filter != null) ?
-                plugs.Where(plug => !plug.name.IsFilterd(filter))
-                    .Select(plug => new Plug(plug, this))
-                : plugs.Select(plug => new Plug(plug, this));
+            return plugs.Where(plug => plug.IsFilterd(filter))
+                .Select(plug => new Plug(plug, this));
         }
+        #endregion
+
+        #region enumerate nodes having plugs connected with this
+        public DependNode FirstConnectedNodeOrDefault(Func<MObject, bool> filter = null)
+        {
+            return EnumerateConnectedNodes(filter).FirstOrDefault();
+        }
+
+        public DependNode FirstSourceNodeOrDefault(Func<MObject, bool> filter = null)
+        {
+            return EnumerateSourceNodes(filter).FirstOrDefault();
+        }
+
+        public DependNode FirstDestinationNodeOrDefault(Func<MObject, bool> filter = null)
+        {
+            return EnumerateDestinationNodes(filter).FirstOrDefault();
+        }
+
+        public IEnumerable<DependNode> EnumerateConnectedNodes(Func<MObject, bool> filter = null)
+        {
+            return EnumerateNodesImpl(true, true, filter, (plug) => true);
+        }
+
+        public IEnumerable<DependNode> EnumerateSourceNodes(Func<MObject, bool> filter = null)
+        {
+            return EnumerateNodesImpl(true, false, filter, (plug) => plug.isDestination);
+        }
+
+        public IEnumerable<DependNode> EnumerateDestinationNodes(Func<MObject, bool> filter = null)
+        {
+            return EnumerateNodesImpl(false, true, filter, (plug) => plug.isSource());
+        }
+
+        private IEnumerable<DependNode> EnumerateNodesImpl(bool asDestination, bool asSource, Func<MObject, bool> filter, Func<MPlug, bool> mplugFilter)
+        {
+            var plugs = new MPlugArray();
+            FnDependNode.getConnections(plugs);
+
+            var nodesiter = new List<IEnumerable<MObject>>();
+            foreach (var plug in plugs.Where(mplugFilter))
+            {
+                var connectedPlugs = new MPlugArray();
+                plug.connectedTo(connectedPlugs, asDestination, asSource);
+
+                nodesiter.Add(
+                    connectedPlugs.Select(p => p.node)
+                        .Distinct()
+                        .Where(n => n.IsFilterd(filter)));
+            }
+
+            return nodesiter.SelectMany(iter => iter)
+                .Distinct()
+                .Select(node => new DependNode(node));
+        }
+        #endregion
 
         public MObject AddAttribute(string longName, string shortName, MFnData.Type type, MDGModifier modifier)
         {

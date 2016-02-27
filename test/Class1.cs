@@ -6,6 +6,7 @@ using System.Threading.Tasks;
 
 using Autodesk.Maya.OpenMaya;
 using CsCmds.Core;
+using CsCmds.Dag;
 
 [assembly: ExtensionPlugin(typeof(test.TestPlugin), "hal1932", "1.0", "Any")]
 [assembly: MPxCommandClass(typeof(test.Test), "test")]
@@ -16,10 +17,6 @@ namespace test
     {
         public override void doIt(MArgList args)
         {
-            foreach (var node in DependNode.Enumerate())
-            {
-                Log.Write(node.FnDependNode.name);
-            }
         }
     }
 
