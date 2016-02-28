@@ -44,16 +44,29 @@ namespace CsCmds.Dag
         #endregion
 
         #region children
-        public DagNode GetChild(int index)
+        public DagNode FirstChildOrDefault()
         {
-            return new DagNode(FnDagNode.child((uint)index));
+            if (FnDagNode.childCount > 0)
+            {
+                return new DagNode(FnDagNode.child(0));
+            }
+            return null;
         }
 
-        public IEnumerable<DagNode> EnumerateChilds()
+        public DagNode FirstChildOrDefault(Func<MObject, bool> filter = null)
         {
-            for (var i = 0; i < ChildCount; ++i)
+            return EnumerateChildren(filter).FirstOrDefault();
+        }
+
+        public IEnumerable<DagNode> EnumerateChildren(Func<MObject, bool> filter = null)
+        {
+            for (uint i = 0; i < FnDagNode.childCount; ++i)
             {
-                yield return GetChild(i);
+                var child = FnDagNode.child(i);
+                if (child.IsFilterd(filter))
+                {
+                    yield return new DagNode(child);
+                }
             }
         }
         #endregion
