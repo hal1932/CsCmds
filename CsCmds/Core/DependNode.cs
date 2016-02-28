@@ -99,14 +99,13 @@ namespace CsCmds.Core
             _fnDependNode = null;
         }
 
-        #region connections
+        #region enumerate plugs
         public Plug FindPlug(string name)
         {
             var plug = FnDependNode.findPlug(name);
             return (plug != null) ? new Plug(plug, this) : null;
         }
 
-        #region enumerate plugs
         public Plug FirstPlugOrDefault(Func<MPlug, bool> filter = null)
         {
             return EnumeratePlugs(filter).FirstOrDefault();
@@ -141,7 +140,7 @@ namespace CsCmds.Core
         }
         #endregion
 
-        #region enumerate nodes having plugs connected with this
+        #region enumerate connected nodes
         public DependNode FirstConnectedNodeOrDefault(Func<MObject, bool> filter = null)
         {
             return EnumerateConnectedNodes(filter).FirstOrDefault();
@@ -195,6 +194,7 @@ namespace CsCmds.Core
         }
         #endregion
 
+        #region attributes
         public MObject AddAttribute(string longName, string shortName, MFnData.Type type, MDGModifier modifier)
         {
             var attrFn = new MFnTypedAttribute();
