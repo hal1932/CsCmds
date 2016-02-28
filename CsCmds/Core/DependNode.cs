@@ -195,6 +195,24 @@ namespace CsCmds.Core
         #endregion
 
         #region attributes
+        public T AttributeValueOrDefault<T>(string name)
+            where T : struct
+        {
+            var plug = FindPlug(name);
+            return (plug != null) ? plug.GetValue<T>() : default(T);
+        }
+
+        public T GetAttributeValueOrNull<T>(string name)
+            where T : class
+        {
+            return FindPlug(name)?.GetValue<T>();
+        }
+
+        public void SetAttributeValue<T>(string name, T value, MDGModifier modifier)
+        {
+            FindPlug(name)?.SetValue(value, modifier);
+        }
+
         public MObject AddAttribute(string longName, string shortName, MFnData.Type type, MDGModifier modifier)
         {
             var attrFn = new MFnTypedAttribute();
