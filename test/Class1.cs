@@ -17,6 +17,19 @@ namespace test
     {
         public override void doIt(MArgList args)
         {
+            Mel.Evaluate("polySphere");
+            var sphere = DagNode.FirstOrDefault(node => node.name.StartsWith("pSphere"));
+            Log.WriteLine(sphere.Name);
+            // -> // pSphere1 //
+
+            foreach (var childNode in sphere.EnumerateChildren())
+            {
+                Log.WriteLine(childNode.Name);
+            }
+            // -> // pSphereShape1 //
+
+            var sphereShape = sphere.FirstChildOrDefault(node => node.hasFn(MFn.Type.kShape));
+            Log.WriteLine(sphereShape.Name);
         }
     }
 

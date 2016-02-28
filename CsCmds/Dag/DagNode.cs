@@ -14,6 +14,11 @@ namespace CsCmds.Dag
             get { return _fnDagNode ?? (_fnDagNode = new MFnDagNode(MObject)); }
         }
 
+        public override MFnDependencyNode FnDependNode
+        {
+            get { return FnDagNode; }
+        }
+
         public MBoundingBox BoundingBox => FnDagNode.boundingBox;
         public int ChildCount => (int)FnDagNode.childCount;
         public int ParentCount => (int)FnDagNode.parentCount;

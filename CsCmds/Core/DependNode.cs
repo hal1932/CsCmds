@@ -11,7 +11,7 @@ namespace CsCmds.Core
         public MObject MObject { get; private set; }
 
         private MFnDependencyNode _fnDependNode;
-        public MFnDependencyNode FnDependNode
+        public virtual MFnDependencyNode FnDependNode
         {
             get
             {
