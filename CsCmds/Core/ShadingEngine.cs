@@ -11,13 +11,13 @@ namespace CsCmds.Core
             : base(obj)
         { }
 
-        public static new ShadingEngine DownCastFrom(DependNode node)
+        public static new ShadingEngine CreateFrom(DependNode node)
         {
             return (node.HasFn(MFn.Type.kShadingEngine)) ?
                 new ShadingEngine(node.MObject) : null;
         }
 
-        public static ShadingEngine DownCastFrom(ObjectSet node)
+        public static ShadingEngine CreateFrom(ObjectSet node)
         {
             return (node.HasFn(MFn.Type.kShadingEngine)) ?
                 new ShadingEngine(node.MObject) : null;

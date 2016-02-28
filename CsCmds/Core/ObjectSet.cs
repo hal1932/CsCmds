@@ -13,7 +13,7 @@ namespace CsCmds.Core
             : base(obj)
         { }
 
-        public static ObjectSet DownCastFrom(DependNode node)
+        public static ObjectSet CreateFrom(DependNode node)
         {
             return (node.HasFn(MFn.Type.kSet)) ?
                 new ObjectSet(node.MObject) : null;

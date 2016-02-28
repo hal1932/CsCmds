@@ -24,7 +24,7 @@ namespace CsCmds.Dag
             : base(obj)
         { }
 
-        public static DagNode DownCastFrom(DependNode node)
+        public static DagNode CreateFrom(DependNode node)
         {
             return (node.HasFn(MFn.Type.kDagNode)) ?
                 new DagNode(node.MObject) : null;

@@ -18,7 +18,7 @@ namespace CsCmds.Dag
             _transform = transform;
         }
 
-        public static new Shape DownCastFrom(DependNode node)
+        public static new Shape CreateFrom(DependNode node)
         {
             return (node.HasFn(MFn.Type.kShape)) ?
                 new Shape(node.MObject, null) : null;

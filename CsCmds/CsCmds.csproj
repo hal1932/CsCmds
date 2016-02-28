@@ -61,6 +61,7 @@
     <Compile Include="Core\Python.cs" />
     <Compile Include="Dag\Shape.cs" />
     <Compile Include="Dag\Transform.cs" />
+    <Compile Include="extensions\MFnDagNodeExtensions.cs" />
     <Compile Include="extensions\MFnDependencyNodeExtensions.cs" />
     <Compile Include="extensions\MObjectExtensions.cs" />
     <Compile Include="extensions\MPlugExtensions.cs" />

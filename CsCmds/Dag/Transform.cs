@@ -12,7 +12,7 @@ namespace CsCmds.Dag
             : base(obj)
         { }
 
-        public static new Transform DownCastFrom(DependNode node)
+        public static new Transform CreateFrom(DependNode node)
         {
             return (node.HasFn(MFn.Type.kTransform)) ?
                 new Transform(node.MObject) : null;
