@@ -34,23 +34,18 @@ namespace CsCmds.Dag
         #region shape
         public Shape FirstShapeOrDefault()
         {
-            for (uint i = 0; i < DagPath.childCount; ++i)
-            {
-                var child = DagPath.child(i);
-                if (child.hasFn(MFn.Type.kShape))
-                {
-                    return new Shape(child, this);
-                }
-            }
-            return default(Shape);
+            return EnumerateShapes().FirstOrDefault();
         }
 
         public IEnumerable<Shape> EnumerateShapes()
         {
-            for (uint i = 0; i < DagPath.childCount; ++i)
+            for (uint i = 0; i < FnDagNode.childCount; ++i)
             {
-                var childObj = DagPath.child(i);
-                yield return new Shape(childObj, this);
+                var childObj = FnDagNode.child(i);
+                if (childObj.hasFn(MFn.Type.kShape))
+                {
+                    yield return new Shape(childObj);
+                }
             }
         }
         #endregion
